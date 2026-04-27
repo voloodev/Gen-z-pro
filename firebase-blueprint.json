@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "A single message in a chat session",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "model"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["text", "role", "timestamp", "userId"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents"
+    },
+    "users/{userId}/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Chat history for a specific user"
+    }
+  }
+}
