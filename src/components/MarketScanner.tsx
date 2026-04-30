@@ -149,6 +149,7 @@ export const MarketScanner: React.FC<MarketScannerProps> = ({ onBookTrade }) => 
           <div className="flex items-center gap-2 mt-1">
             <p className="text-xs font-mono text-gray-500 uppercase tracking-widest">Scanning SMC/ICT Confirmations</p>
             <span className="text-[10px] bg-white/5 text-yellow-500 px-2 py-0.5 rounded border border-white/5 font-mono font-bold">{timeframe.toUpperCase()} TF</span>
+            <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded border border-green-500/20 font-mono font-bold">PROFIT OPTIMIZER</span>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -479,28 +480,45 @@ export const MarketScanner: React.FC<MarketScannerProps> = ({ onBookTrade }) => 
                         </div>
                       </div>
 
-                      <div className="space-y-6">
-                        <div className="flex items-center justify-between group">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 font-black text-xs">E</div>
-                            <span className="text-sm font-bold text-gray-400">ENTRY</span>
-                          </div>
-                          <span className="text-xl font-mono font-black text-white">${selectedSignal.entry}</span>
-                        </div>
-                        <div className="flex items-center justify-between group">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 font-black text-xs">S</div>
-                            <span className="text-sm font-bold text-gray-400">STOP LOSS</span>
-                          </div>
-                          <span className="text-xl font-mono font-black text-red-500">${selectedSignal.sl}</span>
-                        </div>
-                        <div className="space-y-4 pt-4 border-t border-white/5">
-                          {[selectedSignal.tp1, selectedSignal.tp2, selectedSignal.tp3].map((tp, i) => (
-                            <div key={i} className="flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
-                              <span className="text-[10px] font-bold text-gray-500 uppercase">TARGET {i + 1}</span>
-                              <span className="text-sm font-mono font-bold text-green-500">${tp}</span>
+                       <div className="space-y-6">
+                        <div className="flex flex-col group">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 font-black text-xs">E</div>
+                              <span className="text-sm font-bold text-gray-400">ENTRY</span>
                             </div>
-                          ))}
+                            <span className="text-xl font-mono font-black text-white">${selectedSignal.entry}</span>
+                          </div>
+                          <p className="mt-1 text-[9px] text-gray-600 font-medium italic">{selectedSignal.levelLogic.entry}</p>
+                        </div>
+
+                        <div className="flex flex-col group">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 font-black text-xs">S</div>
+                              <span className="text-sm font-bold text-gray-400">STOP LOSS</span>
+                            </div>
+                            <span className="text-xl font-mono font-black text-red-500">${selectedSignal.sl}</span>
+                          </div>
+                          <p className="mt-1 text-[9px] text-gray-600 font-medium italic">{selectedSignal.levelLogic.sl}</p>
+                        </div>
+
+                        <div className="space-y-4 pt-4 border-t border-white/5">
+                          <div className="flex flex-col gap-2">
+                             <div className="flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
+                               <span className="text-[10px] font-bold text-gray-500 uppercase">TARGET 1</span>
+                               <span className="text-sm font-mono font-bold text-green-500">${selectedSignal.tp1}</span>
+                             </div>
+                             <div className="flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
+                               <span className="text-[10px] font-bold text-gray-500 uppercase">TARGET 2</span>
+                               <span className="text-sm font-mono font-bold text-green-500">${selectedSignal.tp2}</span>
+                             </div>
+                             <div className="flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
+                               <span className="text-[10px] font-bold text-gray-500 uppercase">TARGET 3</span>
+                               <span className="text-sm font-mono font-bold text-green-500">${selectedSignal.tp3}</span>
+                             </div>
+                             <p className="mt-1 text-[9px] text-gray-600 font-medium italic">{selectedSignal.levelLogic.tp}</p>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -34,6 +34,11 @@ export interface TradingSignal {
   };
   history: any[];
   projection: any[];
+  levelLogic: {
+    entry: string;
+    sl: string;
+    tp: string;
+  };
 }
 
 export const analyzeMarket = (marketData: any, type: 'LIVE' | 'LONG_TERM' = 'LIVE', btcTrend: 'UPTREND' | 'DOWNTREND' | 'SIDEWAYS' = 'SIDEWAYS'): TradingSignal => {
@@ -494,8 +499,8 @@ export const analyzeMarket = (marketData: any, type: 'LIVE' | 'LONG_TERM' = 'LIV
   }
 
   // Recalculate action after correlation check
-  if (score >= 7) action = 'LONG';
-  else if (score <= -7) action = 'SHORT';
+  if (score >= 4) action = 'LONG';
+  else if (score <= -4) action = 'SHORT';
   else action = 'NEUTRAL';
 
   if (action === 'LONG' && hasDowntrendPattern) {
@@ -506,28 +511,38 @@ export const analyzeMarket = (marketData: any, type: 'LIVE' | 'LONG_TERM' = 'LIV
     score -= 1;
   }
 
-  // Calculate TP/SL
-  const lastLow = Math.min(...lows.slice(-5));
-  const lastHigh = Math.max(...highs.slice(-5));
+  // Calculate TP/SL Logic
+  const lastLow = Math.min(...lows.slice(-10));
+  const lastHigh = Math.max(...highs.slice(-10));
   const atr = (lastHigh - lastLow) || (currentPrice * 0.02);
   const entry = currentPrice;
   let tp1, tp2, tp3, sl;
+  
+  let entryReason = "Calculated based on current market equilibrium and SMC discount zone.";
+  let slReason = "";
+  let tpReason = "";
 
   if (action === 'LONG') {
-    sl = entry - (atr * 1.5);
-    tp1 = entry + (atr * 1.5);
-    tp2 = entry + (atr * 3);
-    tp3 = entry + (atr * 5);
+    sl = Math.min(lastLow - (atr * 0.5), entry - (atr * 1.5));
+    tp1 = entry + (atr * 2);
+    tp2 = entry + (atr * 4);
+    tp3 = entry + (atr * 7);
+    slReason = "Placed below recent Swing Low and Liquidity pool to avoid stop-hunts.";
+    tpReason = "Targets set at previous Supply zones and 2R/4R/7R expansions.";
   } else if (action === 'SHORT') {
-    sl = entry + (atr * 1.5);
-    tp1 = entry - (atr * 1.5);
-    tp2 = entry - (atr * 3);
-    tp3 = entry - (atr * 5);
+    sl = Math.max(lastHigh + (atr * 0.5), entry + (atr * 1.5));
+    tp1 = entry - (atr * 2);
+    tp2 = entry - (atr * 4);
+    tp3 = entry - (atr * 7);
+    slReason = "Placed above recent Swing High and Buy-side liquidity.";
+    tpReason = "Targets set at Demand zones and Fibonacci extension levels.";
   } else {
     sl = entry * 0.98;
     tp1 = entry * 1.02;
     tp2 = entry * 1.04;
     tp3 = entry * 1.06;
+    slReason = "Standard 2% emergency stop.";
+    tpReason = "Standard percentage targets.";
   }
 
   // Projection Generation
@@ -591,6 +606,11 @@ export const analyzeMarket = (marketData: any, type: 'LIVE' | 'LONG_TERM' = 'LIV
     leverage: type === 'LONG_TERM' ? '5x - 10x' : '20x - 50x',
     estimatedDays: type === 'LONG_TERM' ? 14 : 1,
     history: history.slice(-30),
-    projection
+    projection,
+    levelLogic: {
+      entry: entryReason,
+      sl: slReason,
+      tp: tpReason
+    }
   };
 };
