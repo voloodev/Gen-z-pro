@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, TrendingUp, TrendingDown, Activity, Target, ShieldAlert, Zap } from 'lucide-react';
-import axios from 'axios';
+import { getMarketData } from '../services/apiHelper';
 import { analyzeMarket, TradingSignal } from '../services/taEngine';
 import { motion } from 'motion/react';
 
@@ -24,10 +24,10 @@ export const CoinSearch: React.FC<CoinSearchProps> = ({ onBookTrade }) => {
     
     try {
       const symbol = query.toUpperCase().endsWith('USDT') ? query.toUpperCase() : `${query.toUpperCase()}USDT`;
-      const response = await axios.get(`/api/market-data?symbol=${symbol}`);
-      setResult(response.data);
+      const data = await getMarketData(symbol);
+      setResult(data);
       
-      const aiSignal = analyzeMarket(response.data);
+      const aiSignal = analyzeMarket(data);
       setSignal(aiSignal);
     } catch (error) {
       console.error('Search error:', error);

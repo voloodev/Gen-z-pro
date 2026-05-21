@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Zap, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, Clock, Target, Shield, Percent, X, ChevronRight, Info, BarChart3, TrendingUp as TrendIcon, History } from 'lucide-react';
-import axios from 'axios';
+import { getMarketData, getScannerData } from '../services/apiHelper';
 import { analyzeMarket, TradingSignal } from '../services/taEngine';
 import { TradingViewChart } from './TradingViewChart';
 
@@ -23,17 +23,17 @@ export const MarketScanner: React.FC<MarketScannerProps> = ({ onBookTrade }) => 
     setLoading(true);
     try {
       // Fetch BTC data first to satisfy correlation check
-      const btcResponse = await axios.get(`/api/market-data?symbol=BTCUSDT&interval=${timeframe}`);
-      const btcSignal = analyzeMarket(btcResponse.data, "LIVE");
+      const btcData = await getMarketData('BTCUSDT', timeframe);
+      const btcSignal = analyzeMarket(btcData, "LIVE");
       const currentBtcTrend = btcSignal.action === 'LONG' ? 'UPTREND' : btcSignal.action === 'SHORT' ? 'DOWNTREND' : 'SIDEWAYS';
       setBtcTrend(currentBtcTrend);
 
-      const response = await axios.get(`/api/scanner?interval=${timeframe}`);
-      if (response.data.length === 0) {
+      const data = await getScannerData(timeframe);
+      if (data.length === 0) {
         // Fallback to demo mode if no data
         setIsDemoMode(true);
       } else {
-        setScannedCoins(response.data);
+        setScannedCoins(data);
         setIsDemoMode(false);
       }
       setLoading(false);
@@ -111,8 +111,8 @@ export const MarketScanner: React.FC<MarketScannerProps> = ({ onBookTrade }) => 
         return;
       }
 
-      const marketDataResponse = await axios.get(`/api/market-data?symbol=${coin.symbol}&interval=${timeframe}`);
-      const signal = analyzeMarket(marketDataResponse.data, "LIVE", btcTrend);
+      const data = await getMarketData(coin.symbol, timeframe);
+      const signal = analyzeMarket(data, "LIVE", btcTrend);
       
       // Update coin trend to match signal for consistency
       setScannedCoins(prev => prev.map(c => 

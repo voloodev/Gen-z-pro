@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Shield, TrendingUp, Target, Clock, BookMarked, Info } from 'lucide-react';
-import axios from 'axios';
+import { getMarketData } from '../services/apiHelper';
 import { analyzeMarket, TradingSignal } from '../services/taEngine';
 
 interface LongTermScannerProps {
@@ -15,8 +15,8 @@ export const LongTermScanner: React.FC<LongTermScannerProps> = ({ onBookTrade })
   const findLongTermOpportunity = async () => {
     setLoading(true);
     try {
-      const marketDataResponse = await axios.get(`/api/market-data?symbol=BTCUSDT&interval=1d`);
-      const result = analyzeMarket(marketDataResponse.data, "LONG_TERM");
+      const data = await getMarketData('BTCUSDT', '1d');
+      const result = analyzeMarket(data, "LONG_TERM");
       if (result.action === 'NEUTRAL') {
         setSignal(null);
         alert("No high-probability long term signals found at this moment.");
